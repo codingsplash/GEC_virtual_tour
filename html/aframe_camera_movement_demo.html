@@ -1,0 +1,87 @@
+<html>
+<head>
+<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="../js/aframe.js"></script>
+<script src="../js/event-set.js"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+</head>	
+<body>
+<div id="spinner"></div> 
+ 
+
+<a-scene>
+<a-box position="0 0 -5" width="1" height="1" depth="1" color="#4CC3D9"></a-box>
+<a-box position="0 0 5"  width="1" height="1" depth="1" color="red"></a-box>
+<a-box position="-5 0 0"  width="1" height="1" depth="1" color="green"></a-box>
+<a-box position="5 0 0"  width="1" height="1" depth="1" color="yellow"></a-box>
+  
+  <a-sky color="#ECECEC"></a-sky>
+  <a-entity camera="userHeight: 1.6" look-controls position="0 0 0" id="cam"></a-entity>
+</a-scene>
+
+</body>
+
+<script>
+function move_camera_forward(){
+x=$("#cam").attr("position").x;
+y=$("#cam").attr("position").y;
+z=$("#cam").attr("position").z;
+updated_pos=x+" "+y+" "+String(Number(z)-0.2);
+
+
+console.log("Rotation is "+$("#cam").attr("rotation"))
+ry1=$("#cam").attr("rotation").y;
+
+ry=Number(ry1);
+if(ry<0){
+ry=Math.abs(ry)
+}
+if(ry==360){
+rx1=$("#cam").attr("rotation").x;
+ry1=$("#cam").attr("rotation").y;
+rz1=$("#cam").attr("rotation").z;
+updated_rotation=x+" 0 "+z;
+$("#cam").attr("rotation",updated_rotation);
+}
+if(ry>360){
+
+console.log("second if");
+ry=360-ry
+console.log("New ry2 "+ry);
+ry=Math.abs(ry);
+}
+console.log("Current y value is "+ry);
+if(ry < 45 ){
+console.log("First quadrant");
+updated_pos=x+" "+y+" "+String(Number(z)-0.2);
+}
+else if(ry>45 && ry<=135 ){
+console.log("second quadrant");
+updated_pos=String(Number(x)+0.2)+" "+y+" "+z
+}
+else if(ry>135 && ry<=225){
+updated_pos=x+" "+y+" "+String(Number(z)+0.2);
+console.log("third quadrant");
+}
+else if(ry>225 && ry<315){
+updated_pos=String(Number(x)-0.2)+" "+y+" "+z
+console.log("fourth quadrant");
+}
+else if(ry>315){
+console.log("First quadrant");
+updated_pos=x+" "+y+" "+String(Number(z)-0.2);
+}
+console.log(updated_pos);
+$("#cam").attr("position",updated_pos);
+}
+
+function stop_camera_movement(){
+console.log("stopping");
+clearTimeout(timer1);
+}
+timer1=setInterval(move_camera_forward,500);
+//setTimeout(stop_camera_movement,10000);
+</script>
+
+</html>
