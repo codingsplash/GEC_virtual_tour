@@ -1,25 +1,25 @@
 <html>
 <head>
-<script src="aframe.js"></script>
-<script src="event-set.js"></script>
-<script src="particle.js"></script>
-<style>
-#img2{
-position:relative;
-left:20px;
-}
-</style>
-<link href="loader1.css" rel="stylesheet" type="text/css">
+<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="../js/aframe.js"></script>
+<script src="../js/event-set.js"></script>
+<script src="../js/particle.js"></script>
+<script src="../js/spin.min.js"></script>
+<script src="../js/jquery.spin.js"></script>
+<script src="../js/jquery.makemecenter.js"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 </head>	
 <body>
-
-<a-scene id="vr">
-	<a-entity id="river" geometry="primitive: plane" material="color: blue"
-          position="-10 0 0" sound="src: url(background2.mp3); autoplay: true;loop:true"></a-entity>
-
-	<a-entity position="0 2.25 -15" particle-system="preset:snow"></a-entity>
-    
-	<a-sky src="sky.jpg" id="sky"></a-sky>
+<center>
+<div id="userinfo" style="position:relative;top:100px">
+<input id="usrname" placeholder="Your name" style="border-radius:4px;height:40px;border0-style:none"><br><br>
+<input type="button" value="Submit" id="sub">
+</div>
+</center>
+<div id="spinner"></div> 
+<a-scene id="vr">  
+	<a-sky src="../images/sky.jpg" id="sky"></a-sky>
 	  
 	<a-entity position="0 0 0" camera look-controls>
              <a-entity position="0 0 -0.1"
@@ -28,226 +28,51 @@ left:20px;
     material="color: red; shader: flat">
 			</a-entity>
 	<a-entity>
-</a-scene>
+</a-scene> 
 
-<center>
-<div id="progress-circle"></div>
-</center>
 </body>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<script src="loader1.js"></script>
-
-
 <script>
 $(function(){
-	
-$("#img1").hide();
-word_spoken="";
-guide_chosen="";
-user_name="";
+
+function initial_setup(){
 $("#vr").hide();
-
-var options = {
-        height: "300px",
-        width: "300px",
-        line_width: 12,
-        color: "#48CFAD",
-        starting_position: 0,
-        percent: 0,
-        text: "percent"
-    }
-    var progress_circle = $("#progress-circle").gmpc(options);
-    progress_circle.gmpc('animate', 100, 10000);
-	
-	
-function createSpeechRecognition(){
-	recognition = new webkitSpeechRecognition();
-	recognition.lang = 'en-IN';
-	final_transcript="";
-	recognition.continuous = true;
-}	
-
-function startListening(){
-try{
-	recognition.start();//start listening in mic
-	}
-catch(err){
-	console.log("Error occurred: "+err);
-}
+$("#sub").click(function(){
+usrname=$("#usrname").val();
+$("#userinfo").fadeOut("slow");
+$("html body").animate({ backgroundColor: "#B5E5FF" }, 2000);
+submit();
+});
 }
 
-function stopListening(){
-	 recognition.stop();
+function submit(){
+var opts = {
+  lines: 11,
+  color:'navy',
+  speed:0.5,
+  trail:0,
+  radius:30,
+  length:15,
+  width:10,
+  shadow:true
+}
+ 
+$("#spinner").spin(opts);
+setTimeout(start,10000);
 }
 
-function loadVoices(){
-	voicelist=[]
-      if(voicelist.length == 0) {
-        speechSynthesis.getVoices().forEach(function(voice, index) {
-          voicelist.push(voice.name);
-        });
-      }
+function start(){
+console.log("stopping");
+$("#spinner").fadeOut("slow");
+$("#vr").fadeIn(1000);
+var synth = window.speechSynthesis;
+var utterThis = new SpeechSynthesisUtterance("Welcome "+usrname+", to this tour on G E C");
+synth.speak(utterThis);
 }
 
-function highlight_guide(guide){
-
-}
-
-function showGuides(){
-	$("#guides").fadeIn("slow");
-	
-	startListening();
-	recognition.onresult = function(event) {
-    for (var i = event.resultIndex; i < event.results.length; ++i) {
-      if (event.results[i].isFinal) { final_transcript = event.results[i][0].transcript; }
-    }
-
-    console.log(final_transcript);
-	word_spoken=final_transcript;
-	
-	while(word_spoken.length==0){
-	}
-	
-	if(word_spoken.toUpperCase().includes("ALEXA")){
-		word_spoken="";
-		stopListening();
-		vr.removeChild(malini);
-		 alexa.setAttribute("position", {
-            "x" : 0,
-            "y" : 0,
-            "z" : -0.8,
-		});
-		alexaSpeak();
-		
-	}
-	else if(word_spoken.toUpperCase().includes("MALINI")){
-		word_spoken="";
-		stopListening();
-		vr.removeChild(alexa);
-		 malini.setAttribute("position", {
-            "x" : 0,
-            "y" : 0,
-            "z" : -0.8,
-		});
-		maliniSpeak();
-	}
-	else{
-		word_spoken="";
-		stopListening();
-		vr.removeChild(malini);
-		 alexa.setAttribute("position", {
-            "x" : 0,
-            "y" : 0,
-            "z" : -0.8,
-		});
-		wrongGuide();
-	}
-
-  };
-}
-
-function alexaSpeak(){
-     var msg = new SpeechSynthesisUtterance();
-      var voices = window.speechSynthesis.getVoices();
-      msg.voice = voices[3];
-      msg.text = "Hi "+user_name+", I am Alexa from New south wales. I will be your guide for this tour.";
-      speechSynthesis.speak(msg);
-}
-
-function maliniSpeak(){
-     var msg = new SpeechSynthesisUtterance();
-      var voices = window.speechSynthesis.getVoices();
-      msg.voice = voices[8];
-      msg.text = "Hi "+user_name+", I am Malini from Maharashtra. I will take you around G E C.";
-      speechSynthesis.speak(msg);
-}
-function wrongGuide(){
-	var msg = new SpeechSynthesisUtterance();
-      var voices = window.speechSynthesis.getVoices();
-      msg.voice = voices[3];
-      msg.text = "Hi "+user_name+", Could not get the exact pronunciation of our names,. So I, Alexa will be your guide. I am from New South wales by the way.";
-      speechSynthesis.speak(msg);
-}
-
-
-function chooseGuide(){
-	startListening();
-	recognition.onresult = function(event) {
-    for (var i = event.resultIndex; i < event.results.length; ++i) {
-      if (event.results[i].isFinal) { final_transcript = event.results[i][0].transcript; }
-    }
-
-    console.log(final_transcript);
-	word_spoken=final_transcript;
-	
-	while(word_spoken.length==0){
-	}
-	  var msg = new SpeechSynthesisUtterance();
-      var voices = window.speechSynthesis.getVoices();
-      msg.voice = voices[4];
-	  user_name=word_spoken;
-      msg.text = "Hi "+user_name+", Please choose your guide by saying the name of the guide.";
-      speechSynthesis.speak(msg);
-	  initAFrame();
-	  word_spoken="";
-	  stopListening();
-	  showGuides();
-  };
-	
-}
-
-function introSpeak(){
-	  $("#progress-circle").hide();
-	  $("#vr").show();
-	  var msg = new SpeechSynthesisUtterance();
-      var voices = window.speechSynthesis.getVoices();
-      msg.voice = voices[4];
-      msg.text = "Welcome to this Virtual Tour. Please say your name";
-      speechSynthesis.speak(msg);
-	  
-	  chooseGuide();
-
-}
-
-
-if ('speechSynthesis' in window) {
-    speechSynthesis.onvoiceschanged = function() {
-      loadVoices();
-	  createSpeechRecognition();
-
-    }
-}
-
-	  setTimeout(introSpeak,10000);
-
-
+initial_setup();
 });
 
-//window.addEventListener("load", initAFrame);
 
-function initAFrame(){
-vr=document.getElementById("vr");
-alexa =document.createElement("a-image");
-alexa.setAttribute("id","alexa");
- alexa.setAttribute("position", {
-            "x" : -1,
-            "y" : 0,
-            "z" : -1.2,
- });
- alexa.setAttribute("src","alexa.jpg");
- 
- malini =document.createElement("a-image");
- malini.setAttribute("id","malini");
- malini.setAttribute("position", {
-            "x" : 0.5,
-            "y" : 0,
-            "z" : -1.2,
- });
- malini.setAttribute("src","malini.jpg");
-vr.appendChild(alexa);
-vr.appendChild(malini);
-}
 
 </script>
 </html>

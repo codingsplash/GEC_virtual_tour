@@ -9,7 +9,7 @@ if __name__ == '__main__':
              
              'tools.staticdir.on': True,
              'tools.staticdir.root': os.path.abspath(os.getcwd()),
-             'tools.staticdir.dir': 'D:/New Learnings/SpeechSynthesis',
+             'tools.staticdir.dir': 'D:/New Learnings/GEC_VR_tour/GEC_virtual_tour',
              
          }
              }
