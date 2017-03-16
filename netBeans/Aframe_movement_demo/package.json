@@ -1,0 +1,8 @@
+{
+    "name": "Aframe_movement_demo",
+    "version": "1.0.0",
+    "keywords": ["util", "functional", "server", "client", "browser"],
+    "author": "Deepak_m05",
+    "contributors": [],
+    "dependencies": {}
+}
